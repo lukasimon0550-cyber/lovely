@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Ways to Say I Love You ❤️</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #050005;
+  color: #ff1744;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h2 {
+  color: #ff5477;
+  text-align: center;
+  font-size: clamp(17px, 4vw, 26px);
+  text-shadow: 0 0 12px #ff1744;
+  margin: 12px 5px 0;
+}
+
+.subtitle {
+  color: #ffb3c6;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin: 10px;
+}
+
+canvas {
+  display: block;
+  max-width: 100vw;
+}
+
+#ending {
+  position: fixed;
+  bottom: 15px;
+  width: 100%;
+  text-align: center;
+  color: #ff8ba5;
+  font-size: 14px;
+  line-height: 1.8;
+  opacity: 0;
+  transition: opacity 2s;
+  text-shadow: 0 0 12px #ff1744;
+}
+
+#ending.show {
+  opacity: 1;
+}
+
+#again {
+  display: none;
+  margin-top: 8px;
+  padding: 9px 20px;
+  border: 1px solid #ff5477;
+  background: #160008;
+  color: #ff9bb2;
+  border-radius: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>100 WAYS TO SAY I LOVE YOU ❤️</h2>
+<div class="subtitle">FOR MILNE · FROM LUKA</div>
+
+<canvas id="heart"></canvas>
+
+<div id="ending">
+  100 languages. One feeling. ❤️<br>
+  I LOVE YOU, MILNE.<br>
+  Much love from Luka ❤️
+  <br>
+  <button id="again" onclick="start()">Watch again ❤️</button>
+</div>
+
+<script>
+const phrases = [
+"I love you",
+"我爱你",
+"Te amo",
+"Je t'aime",
+"Ich liebe dich",
+"Ti amo",
+"Eu te amo",
+"Ik hou van jou",
+"Ek is lief vir jou",
+"Я тебя люблю",
+"Я тебе кохаю",
+"Σ' αγαπώ",
+"Seni seviyorum",
+"أحبك",
+"אני אוהב אותך",
+"دوستت دارم",
+"मैं तुमसे प्यार करता हूँ",
+"میں تم سے پیار کرتا ہوں",
+"আমি তোমাকে ভালোবাসি",
+"ਮੈਂ ਤੈਨੂੰ ਪਿਆਰ ਕਰਦਾ ਹਾਂ",
+"હું તને પ્રેમ કરું છું",
+"माझं तुझ्यावर प्रेम आहे",
+"म तिमीलाई माया गर्छु",
+"நான் உன்னை காதலிக்கிறேன்",
+"నేను నిన్ను ప్రేమిస్తున్నాను",
+"ನಾನು ನಿನ್ನನ್ನು ಪ್ರೀತಿಸುತ್ತೇನೆ",
+"ഞാൻ നിന്നെ സ്നേഹിക്കുന്നു",
+"ฉันรักคุณ",
+"Anh yêu em",
+"Aku cinta kamu",
+"Saya cintakan awak",
+"Mahal kita",
+"愛してる",
+"사랑해",
+"Би чамд хайртай",
+"မင်းကိုချစ်တယ်",
+"ខ្ញុំស្រឡាញ់អ្នក",
+"ຂ້ອຍຮັກເຈົ້າ",
+"Nakupenda",
+"Ngiyakuthanda",
+"Ndiyakuthanda",
+"Kea u rata",
+"Ke a go rata",
+"Ndinokuda",
+"Ndagukunda",
+"Mo nifẹ rẹ",
+"A hụrụ m gị n'anya",
+"Ina son ka",
+"Waan ku jeclahay",
+"እወድሃለሁ",
+"Aloha au iā ʻoe",
+"Aroha ahau ki a koe",
+"Ou te alofa ia te oe",
+"ʻOku ou ʻofa atu",
+"Au domoni iko",
+"Mwen renmen ou",
+"Mi amas vin",
+"Te amo",
+"T'estimo",
+"Quérote",
+"Maite zaitut",
+"Tá grá agam duit",
+"Tha gaol agam ort",
+"Rwy'n dy garu di",
+"Kocham cię",
+"Miluji tě",
+"Ľúbim ťa",
+"Szeretlek",
+"Te iubesc",
+"Volim te",
+"Ljubim te",
+"Të dua",
+"Jag älskar dig",
+"Jeg elsker deg",
+"Jeg elsker dig",
+"Rakastan sinua",
+"Ég elska þig",
+"Ik hou van je",
+"Es tevi mīlu",
+"Aš tave myliu",
+"Ma armastan sind",
+"Обичам те",
+"Те сакам",
+"Волим те",
+"Мөн сені сүйемін",
+"Мен сени сүйөм",
+"Men seni sevaman",
+"Ман туро дӯст медорам",
+"Ez ji te hez dikim",
+"Ech hunn dech gär",
+"Inħobbok",
+"J't'aime",
+"Te quiero",
+"Eu te amo",
+"愛してるよ",
+"사랑해요",
+"我愛你",
+"我爱你",
+"Я тебя люблю",
+"Ik lief jou"
+];
+
+// Keep exactly 100 entries.
+const canvas = document.getElementById("heart");
+const ctx = canvas.getContext("2d");
+
+let points = [];
+let count = 0;
+let frame = null;
+let lastTime = 0;
+
+function insideHeart(x, y) {
+  const a = x*x + y*y - 1;
+  return a*a*a - x*x*y*y*y <= 0;
+}
+
+function setup() {
+  const width = Math.min(window.innerWidth, 680);
+  const height = Math.min(window.innerHeight * 0.77, 650);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const scale = Math.min(width / 36, height / 32);
+  const cx = width / 2;
+  const cy = height / 2;
+
+  // Find horizontal rows inside a mathematical heart.
+  const rows = [];
+
+  for (let y = -1.05; y <= 1.05; y += 0.022) {
+    let left = Infinity;
+    let right = -Infinity;
+
+    for (let x = -1.15; x <= 1.15; x += 0.004) {
+      if (insideHeart(x, y)) {
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+      }
+    }
+
+    if (right > left) rows.push({y, left, right});
+  }
+
+  // Spread the 100 translations from the top to bottom.
+  points = phrases.map((phrase, i) => {
+    const rowIndex = Math.floor(
+      (i + 0.5) * rows.length / phrases.length
+    );
+    const row = rows[Math.min(rowIndex, rows.length - 1)];
+
+    return {
+      x: cx + ((row.left + row.right) / 2) * scale * 0.96,
+      y: cy + row.y * scale * 0.96,
+      width: (row.right - row.left) * scale * 0.96,
+      text: phrase,
+      index: i
+    };
+  });
+}
+
+function draw() {
+  const width = parseFloat(canvas.style.width);
+  const height = parseFloat(canvas.style.height);
+
+  ctx.clearRect(0, 0, width, height);
+
+  points.forEach((p, i) => {
+    if (i >= count) return;
+
+    ctx.save();
+
+    let size = Math.min(11, width / 52);
+    ctx.font = size + "px Arial";
+
+    while (ctx.measureText(p.text).width > p.width &&
+           size > 4.5) {
+      size -= 0.5;
+      ctx.font = size + "px Arial";
+    }
+
+    // Prevent text from crossing outside its row.
+    ctx.beginPath();
+    ctx.rect(
+      p.x - p.width / 2,
+      p.y - 9,
+      p.width,
+      18
+    );
+    ctx.clip();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = i % 2 === 0 ? "#ff315c" : "#ff91a9";
+    ctx.shadowColor = "#ff1744";
+    ctx.shadowBlur = 7;
+    ctx.fillText(p.text, p.x, p.y);
+
+    ctx.restore();
+  });
+
+  if (count >= phrases.length) {
+    drawOutline();
+    document.getElementById("ending").classList.add("show");
+    document.getElementById("again").style.display = "inline-block";
+  }
+}
+
+function drawOutline() {
+  const width = parseFloat(canvas.style.width);
+  const height = parseFloat(canvas.style.height);
+  const scale = Math.min(width / 36, height / 32);
+  const cx = width / 2;
+  const cy = height / 2;
+
+  ctx.save();
+  ctx.beginPath();
+
+  for (let i = 0; i <= 400; i++) {
+    const t = i / 400 * Math.PI * 2;
+
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = -(13 * Math.cos(t)
+      - 5 * Math.cos(2*t)
+      - 2 * Math.cos(3*t)
+      - Math.cos(4*t));
+
+    if (i === 0) {
+      ctx.moveTo(cx + x * scale * 0.96,
+                 cy + y * scale * 0.96);
+    } else {
+      ctx.lineTo(cx + x * scale * 0.96,
+                 cy + y * scale * 0.96);
+    }
+  }
+
+  ctx.closePath();
+  ctx.strokeStyle = "#ff426b";
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = "#ff1744";
+  ctx.shadowBlur = 15;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function animate(time) {
+  if (!lastTime || time - lastTime >= 150) {
+    count++;
+    lastTime = time;
+    draw();
+  }
+
+  if (count < phrases.length) {
+    frame = requestAnimationFrame(animate);
+  }
+}
+
+function start() {
+  cancelAnimationFrame(frame);
+  count = 0;
+  lastTime = 0;
+
+  document.getElementById("ending").classList.remove("show");
+  document.getElementById("again").style.display = "none";
+
+  setup();
+  draw();
+  frame = requestAnimationFrame(animate);
+}
+
+window.addEventListener("resize", start);
+
+start();
+</script>
+
+</body>
+</html>
